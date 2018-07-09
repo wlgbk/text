@@ -13,8 +13,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from urllib.parse import urlencode
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -27,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-    "post"
+    "post",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -43,10 +44,14 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.messages.middleware.MessageMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'middleware.LearnMiddleware.TotalMiddleware',
 
 ]
 
-ROOT_URLCONF = 'test_one1.urls'
+ROOT_URLCONF = 'bbs.urls'
 
 TEMPLATES = [
     {
@@ -64,8 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'test_one1.wsgi.application'
-
+WSGI_APPLICATION = 'bbs.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -76,7 +80,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -96,7 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -110,8 +112,42 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = 'medias'
+MEDIA_URL = '/medias/'
+
+# wb
+
+WB_APP_KEY = '484708147'
+WB_APP_SECRET = 'aeefd61d98469acb196e1cb2a729d5af'
+WB_CALLBACK = 'http://seamile.org/wb/dalllback'  # wb回调地址
+
+WB_AUTHORIZE_API = 'https://api.weibo.com/oauth2/authorize'
+WB_AUTHORIZE_API_ARGS = {
+    'client_id': WB_APP_KEY,
+    'redirect_uri': WB_CALLBACK,
+
+}
+
+WB_AUTH_URL = '%s?%s' % (WB_AUTHORIZE_API, urlencode(WB_AUTHORIZE_API_ARGS))
+
+# 第二步获取 access token 的 API
+WB_ACCESS_TOKEN_API = 'https://api.weibo.com/oauth2/access_token'
+WB_ACCESS_TOKEN_API_ARGS = {
+    'client_id': WB_APP_KEY,
+    'client_secret': WB_APP_SECRET,
+    'grant_type': 'authorization_code',
+    'redirect_uri': WB_CALLBACK,
+    'code': None,
+}
+
+# 第三步获取用户信息
+WB_USER_SHOW_API = 'https://api.weibo.com/2/users/show.json'
+WB_USER_SHOW_API_ARGS = {
+    'access_token': None,
+    'uid': None,
+}
